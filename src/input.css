@@ -15,6 +15,7 @@
   --accent-ram: #a78bfa;
   --accent-disk: #38bdf8;
   --accent-network: #34d399;
+  --accent-hardware: #fb7185;
   --shadow-soft: 0 24px 80px rgba(0, 0, 0, 0.45);
   --radius-xl: 24px;
   --radius-lg: 18px;
@@ -370,6 +371,11 @@ html.transparent-window .app-shell {
   gap: 18px;
 }
 
+.metrics-grid--wide {
+  margin-top: 18px;
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .metric-card {
   position: relative;
   overflow: hidden;
@@ -411,6 +417,10 @@ html.transparent-window .app-shell {
 
 .metric-card--network .metric-card__glow {
   background: var(--accent-network);
+}
+
+.metric-card--hardware .metric-card__glow {
+  background: var(--accent-hardware);
 }
 
 .metric-card--wide {
@@ -505,6 +515,10 @@ html.transparent-window .app-shell {
   color: #a7f3d0;
 }
 
+.metric-card--hardware .metric-hero__value {
+  color: #fecdd3;
+}
+
 .metric-hero__unit {
   font-size: 0.82rem;
   color: var(--text-secondary);
@@ -556,6 +570,11 @@ html.transparent-window .app-shell {
 .progress--network {
   background: linear-gradient(90deg, rgba(52, 211, 153, 0.95), rgba(110, 231, 183, 0.85));
   box-shadow: 0 0 18px rgba(52, 211, 153, 0.35);
+}
+
+.progress--hardware {
+  background: linear-gradient(90deg, rgba(251, 113, 133, 0.95), rgba(253, 164, 175, 0.85));
+  box-shadow: 0 0 18px rgba(251, 113, 133, 0.35);
 }
 
 .sparkline {
@@ -634,6 +653,15 @@ html.transparent-window .app-shell {
 .sparkline--network-up .sparkline__line {
   stroke: #86efac;
   filter: drop-shadow(0 0 8px rgba(52, 211, 153, 0.35));
+}
+
+.sparkline--hardware .sparkline__area {
+  fill: rgba(251, 113, 133, 0.35);
+}
+
+.sparkline--hardware .sparkline__line {
+  stroke: #fda4af;
+  filter: drop-shadow(0 0 8px rgba(251, 113, 133, 0.35));
 }
 
 .stat-row {
@@ -721,6 +749,54 @@ html.transparent-window .app-shell {
 
 .network-stat--up .network-stat__value {
   color: #86efac;
+}
+
+.hardware-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  gap: 24px;
+}
+
+.hardware-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.hardware-panel--battery {
+  padding-left: 24px;
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sensor-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sensor-list__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.sensor-list__name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+}
+
+.sensor-list__value {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: rgba(235, 240, 255, 0.82);
+  text-align: right;
 }
 
 .interface-list {
@@ -877,6 +953,17 @@ html.transparent-window .app-shell {
 
   .metrics-grid {
     grid-template-columns: 1fr;
+  }
+
+  .hardware-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hardware-panel--battery {
+    padding-left: 0;
+    padding-top: 20px;
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
   }
 }
 

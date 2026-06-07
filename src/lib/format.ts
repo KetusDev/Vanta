@@ -51,6 +51,35 @@ export function formatUptime(seconds: number): string {
   return `${minutes}m`;
 }
 
+export function formatTemperature(celsius: number, digits = 1): string {
+  return `${celsius.toFixed(digits)}°C`;
+}
+
+export function formatDuration(seconds: number | null | undefined): string {
+  if (seconds == null || seconds <= 0) {
+    return "—";
+  }
+
+  const hours = Math.floor(seconds / 3_600);
+  const minutes = Math.floor((seconds % 3_600) / 60);
+
+  if (hours > 0) {
+    return `${hours}h ${minutes}m`;
+  }
+  if (minutes > 0) {
+    return `${minutes}m`;
+  }
+  return `${seconds}s`;
+}
+
+export function formatBatteryState(state: string | null | undefined): string {
+  if (!state) {
+    return "Unknown";
+  }
+
+  return state.charAt(0).toUpperCase() + state.slice(1);
+}
+
 export function truncateName(name: string, max = 28): string {
   if (name.length <= max) {
     return name;

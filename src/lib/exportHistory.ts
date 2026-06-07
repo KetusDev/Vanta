@@ -17,9 +17,12 @@ export function exportHistoryCsv(history: MetricsHistory) {
     history.disk.length,
     history.download.length,
     history.upload.length,
+    history.temperature.length,
   );
 
-  const lines = ["second,cpu_pct,ram_pct,disk_pct,download_kbps,upload_kbps"];
+  const lines = [
+    "second,cpu_pct,ram_pct,disk_pct,download_kbps,upload_kbps,max_temp_c",
+  ];
 
   for (let index = 0; index < length; index += 1) {
     lines.push(
@@ -30,6 +33,7 @@ export function exportHistoryCsv(history: MetricsHistory) {
         history.disk[index] ?? "",
         history.download[index] ?? "",
         history.upload[index] ?? "",
+        history.temperature[index] ?? "",
       ].join(","),
     );
   }

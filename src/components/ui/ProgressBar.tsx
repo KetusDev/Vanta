@@ -1,7 +1,7 @@
 type ProgressBarProps = {
   value: number;
   label?: string;
-  tone?: "cpu" | "ram" | "disk" | "network";
+  tone?: "cpu" | "ram" | "disk" | "network" | "hardware";
 };
 
 const toneClass = {
@@ -9,6 +9,7 @@ const toneClass = {
   ram: "progress--ram",
   disk: "progress--disk",
   network: "progress--network",
+  hardware: "progress--hardware",
 } as const;
 
 export function ProgressBar({

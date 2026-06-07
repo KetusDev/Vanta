@@ -1,12 +1,13 @@
 mod metrics;
 
+use battery::State as BatteryState;
 use metrics::{
-    AllMetrics, CpuMetrics, DiskEntry, DiskMetrics, NetworkInterface, NetworkMetrics,
-    RamMetrics, SystemMetrics,
+    AllMetrics, BatteryMetrics, CpuMetrics, DiskEntry, DiskMetrics, HardwareMetrics,
+    NetworkInterface, NetworkMetrics, RamMetrics, SystemMetrics, TemperatureSensor,
 };
 use std::sync::Mutex;
 use std::time::Duration;
-use sysinfo::{Disks, Networks, System};
+use sysinfo::{Components, Disks, Networks, System};
 use tauri::{
     menu::{Menu, MenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
@@ -19,6 +20,7 @@ struct MetricsState {
     system: System,
     networks: Networks,
     disks: Disks,
+    components: Components,
 }
 
 fn is_loopback_interface(name: &str) -> bool {
@@ -88,6 +90,109 @@ fn read_disk(disks: &Disks) -> DiskMetrics {
     }
 }
 
+fn read_hardware(components: &Components) -> HardwareMetrics {
+    let mut sensors = Vec::new();
+    let mut max_temp_c = None;
+
+    for component in components.iter() {
+        let Some(temp_c) = component.temperature() else {
+            continue;
+        };
+
+        if !temp_c.is_finite() {
+            continue;
+        }
+
+        max_temp_c = Some(max_temp_c.map_or(temp_c, |current: f32| current.max(temp_c)));
+        sensors.push(TemperatureSensor {
+            label: component.label().to_string(),
+            temp_c,
+            max_c: component.max(),
+            critical_c: component.critical(),
+        });
+    }
+
+    sensors.sort_by(|left, right| {
+        right
+            .temp_c
+            .partial_cmp(&left.temp_c)
+            .unwrap_or(std::cmp::Ordering::Equal)
+    });
+
+    HardwareMetrics {
+        sensors,
+        max_temp_c,
+    }
+}
+
+fn battery_state_label(state: BatteryState) -> &'static str {
+    match state {
+        BatteryState::Unknown | BatteryState::__Nonexhaustive => "unknown",
+        BatteryState::Charging => "charging",
+        BatteryState::Discharging => "discharging",
+        BatteryState::Empty => "empty",
+        BatteryState::Full => "full",
+    }
+}
+
+fn read_battery() -> BatteryMetrics {
+    let manager = match battery::Manager::new() {
+        Ok(manager) => manager,
+        Err(_) => {
+            return BatteryMetrics {
+                present: false,
+                percent: None,
+                state: None,
+                time_to_full_secs: None,
+                time_to_empty_secs: None,
+            };
+        }
+    };
+
+    let mut batteries = match manager.batteries() {
+        Ok(batteries) => batteries,
+        Err(_) => {
+            return BatteryMetrics {
+                present: false,
+                percent: None,
+                state: None,
+                time_to_full_secs: None,
+                time_to_empty_secs: None,
+            };
+        }
+    };
+
+    let mut battery = match batteries.next() {
+        Some(Ok(battery)) => battery,
+        _ => {
+            return BatteryMetrics {
+                present: false,
+                percent: None,
+                state: None,
+                time_to_full_secs: None,
+                time_to_empty_secs: None,
+            };
+        }
+    };
+
+    let _ = manager.refresh(&mut battery);
+
+    use battery::units::ratio::percent;
+    use battery::units::time::second;
+
+    BatteryMetrics {
+        present: true,
+        percent: Some(battery.state_of_charge().get::<percent>()),
+        state: Some(battery_state_label(battery.state()).to_string()),
+        time_to_full_secs: battery
+            .time_to_full()
+            .map(|time| time.get::<second>() as u64),
+        time_to_empty_secs: battery
+            .time_to_empty()
+            .map(|time| time.get::<second>() as u64),
+    }
+}
+
 fn read_network(networks: &Networks) -> NetworkMetrics {
     let mut download_bytes = 0u64;
     let mut upload_bytes = 0u64;
@@ -130,6 +235,7 @@ fn refresh_metrics(state: &mut MetricsState) {
     state.system.refresh_memory();
     state.disks.refresh(true);
     state.networks.refresh(true);
+    state.components.refresh(false);
 }
 
 fn collect_metrics(state: &mut MetricsState) -> AllMetrics {
@@ -140,6 +246,8 @@ fn collect_metrics(state: &mut MetricsState) -> AllMetrics {
         disk: read_disk(&state.disks),
         network: read_network(&state.networks),
         system: read_system(&state.system),
+        hardware: read_hardware(&state.components),
+        battery: read_battery(),
     }
 }
 
@@ -209,6 +317,7 @@ pub fn run() {
                 system,
                 networks: Networks::new_with_refreshed_list(),
                 disks: Disks::new_with_refreshed_list(),
+                components: Components::new_with_refreshed_list(),
             }));
 
             let show_item = MenuItem::with_id(app, "show", "Show Vanta", true, None::<&str>)?;

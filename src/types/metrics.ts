@@ -39,12 +39,34 @@ export interface SystemMetrics {
   swap_used_mb: number;
 }
 
+export interface TemperatureSensor {
+  label: string;
+  temp_c: number;
+  max_c: number | null;
+  critical_c: number | null;
+}
+
+export interface HardwareMetrics {
+  sensors: TemperatureSensor[];
+  max_temp_c: number | null;
+}
+
+export interface BatteryMetrics {
+  present: boolean;
+  percent: number | null;
+  state: string | null;
+  time_to_full_secs: number | null;
+  time_to_empty_secs: number | null;
+}
+
 export interface AllMetrics {
   cpu: CpuMetrics;
   ram: RamMetrics;
   disk: DiskMetrics;
   network: NetworkMetrics;
   system: SystemMetrics;
+  hardware: HardwareMetrics;
+  battery: BatteryMetrics;
 }
 
 export interface MetricsHistory {
@@ -53,6 +75,7 @@ export interface MetricsHistory {
   disk: number[];
   download: number[];
   upload: number[];
+  temperature: number[];
 }
 
 export const HISTORY_LENGTH = 60;

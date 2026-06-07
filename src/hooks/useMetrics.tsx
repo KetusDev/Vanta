@@ -23,6 +23,7 @@ const emptyHistory: MetricsHistory = {
   disk: [],
   download: [],
   upload: [],
+  temperature: [],
 };
 
 const MetricsContext = createContext<MetricsContextValue>({
@@ -64,6 +65,7 @@ export function MetricsProvider({ children }: { children: ReactNode }) {
           ),
           download: appendHistory(prev.download, next.network.download_kbps),
           upload: appendHistory(prev.upload, next.network.upload_kbps),
+          temperature: appendHistory(prev.temperature, next.hardware.max_temp_c ?? 0),
         }));
         setLoading(false);
 
@@ -135,6 +137,16 @@ export function useNetworkMetrics() {
   return {
     data: metrics?.network ?? null,
     history: history,
+    loading,
+  };
+}
+
+export function useHardwareMetrics() {
+  const { metrics, history, loading } = useMetrics();
+  return {
+    hardware: metrics?.hardware ?? null,
+    battery: metrics?.battery ?? null,
+    history: history.temperature,
     loading,
   };
 }

@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 type MetricCardProps = {
   title: string;
   subtitle?: string;
-  accent: "cpu" | "ram" | "disk" | "network";
+  accent: "cpu" | "ram" | "disk" | "network" | "hardware";
   delay?: number;
   loading?: boolean;
   wide?: boolean;
@@ -15,6 +15,7 @@ const accentStyles = {
   ram: "metric-card--ram",
   disk: "metric-card--disk",
   network: "metric-card--network",
+  hardware: "metric-card--hardware",
 } as const;
 
 export function MetricCard({

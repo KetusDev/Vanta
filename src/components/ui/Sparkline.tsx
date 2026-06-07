@@ -2,7 +2,7 @@ import { historyMax } from "../../lib/history";
 
 type SparklineProps = {
   values: number[];
-  tone?: "cpu" | "ram" | "disk" | "network" | "network-up";
+  tone?: "cpu" | "ram" | "disk" | "network" | "network-up" | "hardware";
   label?: string;
   height?: number;
 };
@@ -13,6 +13,7 @@ const toneClass = {
   disk: "sparkline--disk",
   network: "sparkline--network",
   "network-up": "sparkline--network-up",
+  hardware: "sparkline--hardware",
 } as const;
 
 function buildPath(values: number[], width: number, height: number): string {

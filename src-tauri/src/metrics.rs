@@ -49,10 +49,35 @@ pub struct SystemMetrics {
 }
 
 #[derive(Serialize)]
+pub struct TemperatureSensor {
+    pub label: String,
+    pub temp_c: f32,
+    pub max_c: Option<f32>,
+    pub critical_c: Option<f32>,
+}
+
+#[derive(Serialize)]
+pub struct HardwareMetrics {
+    pub sensors: Vec<TemperatureSensor>,
+    pub max_temp_c: Option<f32>,
+}
+
+#[derive(Serialize)]
+pub struct BatteryMetrics {
+    pub present: bool,
+    pub percent: Option<f32>,
+    pub state: Option<String>,
+    pub time_to_full_secs: Option<u64>,
+    pub time_to_empty_secs: Option<u64>,
+}
+
+#[derive(Serialize)]
 pub struct AllMetrics {
     pub cpu: CpuMetrics,
     pub ram: RamMetrics,
     pub disk: DiskMetrics,
     pub network: NetworkMetrics,
     pub system: SystemMetrics,
+    pub hardware: HardwareMetrics,
+    pub battery: BatteryMetrics,
 }

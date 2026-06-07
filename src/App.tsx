@@ -2,6 +2,7 @@ import { CpuCard } from "./components/CpuCard";
 import { RamCard } from "./components/RamCard";
 import { DiskCard } from "./components/DiskCard";
 import { NetworkCard } from "./components/NetworkCard";
+import { HardwareCard } from "./components/HardwareCard";
 import { SettingsPanel } from "./components/SettingsPanel";
 import { SystemStats } from "./components/SystemStats";
 import { MetricsProvider } from "./hooks/useMetrics";
@@ -37,6 +38,10 @@ function App() {
               <RamCard />
               <DiskCard />
               <NetworkCard />
+            </section>
+
+            <section className="metrics-grid metrics-grid--wide">
+              <HardwareCard />
             </section>
           </main>
         </div>
