@@ -1,12 +1,23 @@
 mod metrics;
-use metrics::{CpuMetrics, DiskEntry, DiskMetrics, RamMetrics};
-use sysinfo::{Disks, System};
+use metrics::{CpuMetrics, DiskEntry, DiskMetrics, NetworkMetrics, RamMetrics};
+use std::sync::Mutex;
+use sysinfo::{Disks, Networks, System};
+use tauri::Manager;
+
+fn is_loopback_interface(name: &str) -> bool {
+    let name = name.to_lowercase();
+    name.contains("loopback") || name == "lo"
+}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![get_cpu, get_ram, get_disk])
+        .setup(|app| {
+            app.manage(Mutex::new(Networks::new_with_refreshed_list()));
+            Ok(())
+        })
+        .invoke_handler(tauri::generate_handler![get_cpu, get_ram, get_disk, get_network])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -70,5 +81,27 @@ fn get_disk() -> DiskMetrics {
         disks: entries,
         total_gb,
         used_gb,
+    }
+}
+
+#[tauri::command]
+fn get_network(networks: tauri::State<'_, Mutex<Networks>>) -> NetworkMetrics {
+    let mut networks = networks.lock().expect("network state poisoned");
+    networks.refresh(true);
+
+    let mut download_bytes = 0u64;
+    let mut upload_bytes = 0u64;
+
+    for (name, data) in networks.iter() {
+        if is_loopback_interface(name) {
+            continue;
+        }
+        download_bytes += data.received();
+        upload_bytes += data.transmitted();
+    }
+
+    NetworkMetrics {
+        download_kbps: download_bytes / 1024,
+        upload_kbps: upload_bytes / 1024,
     }
 }

@@ -1,6 +1,7 @@
 import { CpuCard } from "./components/CpuCard";
 import { RamCard } from "./components/RamCard";
 import { DiskCard } from "./components/DiskCard";
+import { NetworkCard } from "./components/NetworkCard";
 
 
 function App() {
@@ -9,6 +10,7 @@ function App() {
       <CpuCard />
       <RamCard />
       <DiskCard />
+      <NetworkCard />
     </div>
   );
 }

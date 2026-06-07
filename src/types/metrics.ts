@@ -20,3 +20,8 @@ export interface DiskMetrics{
     total_gb: number;
     used_gb: number;
 }
+
+export interface NetworkMetrics {
+    download_kbps: number;
+    upload_kbps: number;
+}
