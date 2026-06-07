@@ -29,7 +29,10 @@
 html,
 body,
 #root {
+  height: 100%;
   min-height: 100%;
+  background: transparent;
+  overflow: hidden;
 }
 
 body {
@@ -37,17 +40,31 @@ body {
   color: var(--text-primary);
   font-family: var(--font-display);
   background: var(--bg-0);
-  overflow-x: hidden;
+  overflow: hidden;
   -webkit-font-smoothing: antialiased;
   color-scheme: dark;
 }
 
+html.transparent-window body {
+  background: transparent;
+}
+
 .app-shell {
   position: relative;
-  min-height: 100vh;
+  height: 100%;
+  min-height: 100%;
   padding: 28px;
   isolation: isolate;
+  overflow-x: hidden;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--bg-0);
+  box-sizing: border-box;
+}
+
+html.transparent-window .app-shell {
+  background: rgba(6, 8, 15, 0.78);
+  backdrop-filter: blur(28px) saturate(140%);
 }
 
 .ambient {
@@ -314,6 +331,35 @@ body {
   font-size: 0.78rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.settings__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.settings__action {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+  font-size: 0.76rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.settings__action:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.settings__hint {
+  margin: 0 0 12px;
+  font-size: 0.76rem;
+  line-height: 1.5;
+  color: var(--text-muted);
 }
 
 .metrics-grid {

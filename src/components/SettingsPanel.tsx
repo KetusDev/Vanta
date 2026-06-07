@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { useMetrics } from "../hooks/useMetrics";
 import { useSettings } from "../hooks/useSettings";
+import { exportHistoryCsv, exportHistoryJson } from "../lib/exportHistory";
 
 const POLL_OPTIONS = [
   { value: 500, label: "0.5 s" },
@@ -10,6 +12,7 @@ const POLL_OPTIONS = [
 
 export function SettingsPanel() {
   const { settings, updateSettings, resetSettings } = useSettings();
+  const { history } = useMetrics();
   const [open, setOpen] = useState(false);
 
   return (
@@ -64,12 +67,34 @@ export function SettingsPanel() {
           </label>
 
           <label className="settings__field settings__field--checkbox">
+            <span>Launch at startup</span>
+            <input
+              type="checkbox"
+              checked={settings.autostart}
+              onChange={(event) =>
+                updateSettings({ autostart: event.target.checked })
+              }
+            />
+          </label>
+
+          <label className="settings__field settings__field--checkbox">
             <span>Always on top</span>
             <input
               type="checkbox"
               checked={settings.alwaysOnTop}
               onChange={(event) =>
                 updateSettings({ alwaysOnTop: event.target.checked })
+              }
+            />
+          </label>
+
+          <label className="settings__field settings__field--checkbox">
+            <span>Transparent window</span>
+            <input
+              type="checkbox"
+              checked={settings.transparentWindow}
+              onChange={(event) =>
+                updateSettings({ transparentWindow: event.target.checked })
               }
             />
           </label>
@@ -116,6 +141,35 @@ export function SettingsPanel() {
             />
             <strong>{settings.ramAlertThreshold}%</strong>
           </label>
+
+          <label className="settings__field">
+            <span>Disk alert threshold</span>
+            <input
+              type="range"
+              min={70}
+              max={99}
+              step={1}
+              value={settings.diskAlertThreshold}
+              disabled={!settings.alertsEnabled}
+              onChange={(event) =>
+                updateSettings({ diskAlertThreshold: Number(event.target.value) })
+              }
+            />
+            <strong>{settings.diskAlertThreshold}% used</strong>
+          </label>
+
+          <div className="settings__actions">
+            <button type="button" className="settings__action" onClick={() => exportHistoryCsv(history)}>
+              Export CSV
+            </button>
+            <button type="button" className="settings__action" onClick={() => exportHistoryJson(history)}>
+              Export JSON
+            </button>
+          </div>
+
+          <p className="settings__hint">
+            Closing the window hides Vanta to the tray. Use Quit in the tray menu to exit.
+          </p>
 
           <button type="button" className="settings__reset" onClick={resetSettings}>
             Reset defaults

@@ -65,7 +65,10 @@ export interface AppSettings {
   alertsEnabled: boolean;
   cpuAlertThreshold: number;
   ramAlertThreshold: number;
+  diskAlertThreshold: number;
   alwaysOnTop: boolean;
+  autostart: boolean;
+  transparentWindow: boolean;
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -74,5 +77,8 @@ export const DEFAULT_SETTINGS: AppSettings = {
   alertsEnabled: true,
   cpuAlertThreshold: 90,
   ramAlertThreshold: 90,
+  diskAlertThreshold: 90,
   alwaysOnTop: false,
+  autostart: false,
+  transparentWindow: false,
 };

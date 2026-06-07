@@ -71,6 +71,7 @@ export function MetricsProvider({ children }: { children: ReactNode }) {
           enabled: settings.alertsEnabled,
           cpuThreshold: settings.cpuAlertThreshold,
           ramThreshold: settings.ramAlertThreshold,
+          diskThreshold: settings.diskAlertThreshold,
         });
       } catch (error) {
         console.error("Failed to fetch metrics", error);
@@ -88,6 +89,7 @@ export function MetricsProvider({ children }: { children: ReactNode }) {
     settings.alertsEnabled,
     settings.cpuAlertThreshold,
     settings.ramAlertThreshold,
+    settings.diskAlertThreshold,
   ]);
 
   return (

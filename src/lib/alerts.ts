@@ -8,11 +8,13 @@ import type { AllMetrics } from "../types/metrics";
 type AlertState = {
   cpuHigh: boolean;
   ramHigh: boolean;
+  diskAlerts: Record<string, boolean>;
 };
 
 const alertState: AlertState = {
   cpuHigh: false,
   ramHigh: false,
+  diskAlerts: {},
 };
 
 async function notify(title: string, body: string) {
@@ -33,6 +35,7 @@ export async function checkMetricAlerts(
     enabled: boolean;
     cpuThreshold: number;
     ramThreshold: number;
+    diskThreshold: number;
   },
 ) {
   if (!options.enabled) {
@@ -62,5 +65,24 @@ export async function checkMetricAlerts(
     );
   } else if (ramUsage < options.ramThreshold - 5) {
     alertState.ramHigh = false;
+  }
+
+  for (const disk of metrics.disk.disks) {
+    if (disk.total_gb === 0) {
+      continue;
+    }
+
+    const usedPct = (disk.used_gb / disk.total_gb) * 100;
+    const wasHigh = alertState.diskAlerts[disk.name] ?? false;
+
+    if (usedPct >= options.diskThreshold && !wasHigh) {
+      alertState.diskAlerts[disk.name] = true;
+      await notify(
+        "Low disk space",
+        `${disk.name}: ${usedPct.toFixed(0)}% used (${disk.used_gb} / ${disk.total_gb} GB).`,
+      );
+    } else if (usedPct < options.diskThreshold - 5) {
+      alertState.diskAlerts[disk.name] = false;
+    }
   }
 }
