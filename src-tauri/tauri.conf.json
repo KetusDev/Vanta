@@ -12,9 +12,11 @@
   "app": {
     "windows": [
       {
-        "title": "vanta",
-        "width": 800,
-        "height": 600
+        "title": "Vanta",
+        "width": 960,
+        "height": 720,
+        "minWidth": 720,
+        "minHeight": 600
       }
     ],
     "security": {
