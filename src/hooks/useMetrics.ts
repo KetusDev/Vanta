@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
-import { CpuMetrics, RamMetrics} from "../types/metrics";
+import { CpuMetrics, DiskMetrics, RamMetrics} from "../types/metrics";
 
 export function useCpuMetrics(){
     const [data, setData] = useState<CpuMetrics | null>(null);
@@ -27,5 +27,17 @@ export function useRamMetrics(){
         return () => clearInterval(interval);
     }, []);
 
+    return data;
+}
+
+export function useDiskMetrics(){
+    const [data, setData] = useState<DiskMetrics | null>(null);
+    useEffect(()=>{
+        const interval = setInterval(async()=>{
+            const metrics = await invoke<DiskMetrics>("get_disk");
+            setData(metrics);
+        }, 1000);
+        return () => clearInterval(interval);
+    }, []);
     return data;
 }

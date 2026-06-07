@@ -6,8 +6,8 @@ export function CpuCard(){
     return (
         <div>
             <h2>CPU</h2>
-            <p>{cpu.overall.toFixed(1)}%</p>
-            <p>{cpu.cores.length}</p>
+            <p>Usage: {cpu.overall.toFixed(1)}%</p>
+            <p>Cores: {cpu.cores.length}</p>
         </div>
     );
 }

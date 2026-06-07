@@ -6,9 +6,9 @@ export function RamCard(){
     return (
         <div>
             <h2>RAM</h2>
-            <p>{ram.total_mb.toFixed(1)} MB</p>
-            <p>{ram.used_mb.toFixed(1)} MB</p>
-            <p>{ram.available_mb.toFixed(1)} MB</p>
+            <p>Total: {ram.total_mb.toFixed(1)} MB</p>
+            <p>Used: {ram.used_mb.toFixed(1)} MB</p>
+            <p>Available: {ram.available_mb.toFixed(1)} MB</p>
         </div>
     );
 }   
